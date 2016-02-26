@@ -1,0 +1,87 @@
+\documentclass[a4paper]{report}	
+
+% Chargement d'extensions
+\usepackage[utf8]{inputenc}     % Pour utiliser les lettres accentuées
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cases}
+\usepackage{mathrsfs}
+\usepackage [francais]{babel}     % Pour la langue française
+\usepackage{graphicx}	%pour l'insertion de figures 
+\usepackage{verbatim}		%pour le texte brut 
+\usepackage{moreverb}		%text brut avec tab
+\usepackage{listings} %aussi pour texte brut
+\usepackage{color}
+\usepackage{subfigure} %pour des dous-figures
+\usepackage{multicol}
+\usepackage{geometry}
+\geometry{margin=1in} % for example, change the margins to 1 inches all round
+
+\addto\captionsfrench{\renewcommand{\chaptername}{Partie}}
+
+% Informations le titre, le(s) auteur (s), la date
+\title {Rapport - Data mining}
+\author {Brendan LE LAIN}
+\date{\today}
+
+% Début du document
+\begin {document}
+ 
+\pagestyle{headings}
+ 
+\maketitle
+ 
+\chapter{Rappel sur les méthodes utilisées}
+
+\section{Analyse Factorielle des correspondances}
+
+\subsection{Objectifs}
+L'analyse factorielles des correspondances (AFC) permet de résumer et de visualiser un tableau de contingence, c'est-à-dire un tableau croisant deux variables qualitatives. Les objectifs de l'AFC sont les suivants :
+ \begin{itemize}
+ \item comparer les profils lignes entre eux
+ \item comparer les profils colonnes entre eux
+ \item interpréter les proximité entre les lignes et les colonnes, c'est-à-dire visualiser les associations des modalités des deux variables
+ \end{itemize}
+
+\section{Analyse des Correspondances Multiples}
+
+\subsection{Objectifs}
+L'analyse des correspondances multiples (ACM) est l'extension de l'AFC au cas de plus de deux variables. L'ACM permet d'étudier les ressemblances entre individus du point de vue de l'ensemble des variables et de dégager des profils d'individus. Elle permet également de faire un bilan des liaisons entre variables et d'étudier les associations de modalités.
+
+\subsection{Atouts de l'AFC et de l'ACM}
+\begin{itemize}
+ \item les facteurs sont les variables numériques qui séparent le mieux les modalités des variables qualitatives étudiées ;
+ \item elles permettent de vérifier visuellement que des modalités voisines par définition sont proches dans le plan factoriel ;
+ \item l'AFC et l'ACM permettent de transformer des variables qualitatives (initiales) en variables quantitatives (les projections des modalités des variables initiales sur les axes factoriels), ce qui peut être un pré-traitement avant une nouvelle étude (analyse discriminante par exemple) ;
+ \item elles permettent de traiter simultanément les variables quantitatives (en les discrétisant) et qualitatives ; 
+ \item elles permettent de représenter simultanément individus et modalités sur un même plan ;
+ \end{itemize}
+ 
+ \subsection{Aspects à vérifier}
+ En AFC et ACM, il est très important de vérifier qu'il n'y a pas de modolités rares (avec un faible effectif), car ces méthodes apportent beaucoup d'importance à ces modalités. 
+ 
+ 
+ \chapter{Problème 1}
+ 
+\section{Description des données}
+
+\emph{Mammographic Mass data set} présente 3 mesures issues de mammographies (variables \verb|shape| , \verb|density| et \verb|margin|) réalisées sur 961 patientes ayant une tumeur. L'âge (variable \verb|age|) ainsi qu'un jugement d'un spécialiste sur la gravité de la tumeur (variable \verb|assessment|) sont aussi disponibles. Les données sont complétées par la sévérité effective de la tumeur : bénigne ou non (variable \verb|severity|) . 
+
+\subsection{Préparation des données}
+Le fichier des données brutes \verb|mammo.data| ne présente pas le nom des variables, utilise la virgule comme caractère de séparation et le point d'interrogation pour coder les valeurs manquantes. L'importation, avec \verb|R|, se fera part : 
+\lstset{frame=single, xrightmargin =1cm , xleftmargin =1 cm, morekeywords={uniroot,rweibull,seq,abline,par,rbind,repeat,hist,sd,next}}
+\lstinputlisting[firstline=4, lastline=6]{./PB1/pb1_OK.R}
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
