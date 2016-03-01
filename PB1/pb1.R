@@ -12,6 +12,8 @@ apply(data,2,function(x) sum(is.na(x)))   #le 2 pour colonnes
 summary(data)
 
 #A VOIR : fonction na.omit pour supprimer les lignes avec donnees manquantes
+data2 = na.omit(data)
+head(data2)
 #On peut eliminer toutes les lignes ayant des donnees manquantes 
 aEliminer <- apply(is.na(data),MARGIN=1,FUN=any)    #la fonction any sur un vecteur renvoie TRUE si au moins un TRUE. On l'applique a chaque ligne avec MARGIN=1
 cleanData <- data[!aEliminer,]
@@ -135,12 +137,12 @@ cleanData$severity=factor(cleanData$severity,label=c("benign","malignant"))
 #pour ACM il faut FactoMineR
 library(FactoMineR)
 
-res.acm <- MCA(cleanData, quali.sup = c(1,5))
+res.acm <- MCA(cleanData, quali.sup = c(1,5,6))
 
 #Pour avoir le diagramme en barre pour choisir nombre d'axes a conserver
 barplot(res.acm$eig[,2],names=paste("Dim",1:nrow(res.acm$eig)))
 #Pour avoir les valeurs numeriques
-round(res.acm$eig[1:5,],2)
+round(res.acm$eig[1:9,],2)
 
 plot(res.acm,invisible=c("var"),habillage="shape")
 plot(res.acm,invisible=c("var","quanti.sup"),habillage="margin")
