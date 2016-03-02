@@ -69,85 +69,78 @@ L'analyse des correspondances multiples (ACM) est l'extension de l'AFC au cas de
 
 \emph{Mammographic Mass data set} présente 3 mesures issues de mammographies (variables \verb|shape| , \verb|density| et \verb|margin|) réalisées sur 961 patientes ayant une tumeur. L'âge (variable \verb|age|) ainsi qu'un jugement de spécialistes sur la gravité de la tumeur (variable \verb|assessment|) sont aussi disponibles. Les données sont complétées par la sévérité effective de la tumeur : bénigne ou non (variable \verb|severity|).
 
-L'objectif de l'étude est de voir si les 3 variables \verb|shape| , \verb|density| et \verb|margin| sont liées entre elles (il s'agira par exemple de répondre à des questions comme ''les tumeurs de forme ronde ont-elles en général une frange particulière?'' ou encore ''Peut-on identifier des groupes d'individus possédant en général certaines modalités?''. L'objectif est dans un deuxième temps d'identifier des profils d'individus possédant une forte probabilité que la tumeur soit maligne. Il sera alors intéressant de comparer les résultats établis avec la variable \verb|assessment| qui est censé être un indicateur de la sévérité de la tumeur.
+L'objectif de l'étude est de voir si les 3 variables \verb|shape| , \verb|density| et \verb|margin| sont liées entre elles (il s'agira par exemple de répondre à des questions comme ''les tumeurs de forme ronde ont-elles en général une frange particulière?'' ou encore ''Peut-on identifier des groupes d'individus possédant en général certaines modalités?''. L'objectif est dans un deuxième temps d'identifier des profils d'individus possédant une forte probabilité que la tumeur soit maligne. 
+
+Le code \verb|R| et \verb|SAS| que nous avons utilisé est fournit en annexe A.
 
 \subsection{Préparation des données}
-Le fichier des données brutes \verb|mammo.data| ne présente pas le nom des variables, utilise la virgule comme caractère de séparation et le point d'interrogation pour coder les valeurs manquantes. 
+Le fichier des données brutes ne présente pas le nom des variables, utilise la virgule comme caractère de séparation et le point d'interrogation pour coder les valeurs manquantes. 
 
 Les données comprennent 131 lignes ayant au moins une valeur manquante. On décide de supprimer toutes ces lignes.
 
+Pour la variable \verb|assessment| (qui va de 1 à 5) on observe quelques données abérantes prenant les valeurs 0 ou 6. On supprime ces lignes. On a aussi une ligne avec la valeur 55, on peut supposer que c'est une erreur de frappe, on la remplace par la valeur 5.
 
-\subsection{Étude de chaque variable}
-Avant de faire une quelconque analyse sur les données ainsi que pour mieux connaître les variables et leur influence sur la variable cible \verb|severity|, on réalise une analyse descriptive de chaque variable.
+\subsubsection{Age}
+
+La variable \verb|age|, contrairement aux autres qui sont qualitatives, est continue. On peut penser que cette variable admet une liaison significative avec la variable cible \verb|severity|, puisqu'on a tendance à penser que le risque d'une tumeur maligne augmente avec l'âge. On décide donc de continuer en la discrétisant.
+
+Dans notre jeu de données, cette variable a une allure normale, avec une moyenne à environ 56 ans. Pour mieux voir l'influence de l'âge, on le découpe en 11 quantiles. (Le nombre 11 est complètement arbitraire, c'est simplement celui qui nous a paru, après plusieurs essais avec d'autres valeurs, le plus intéressant). Puis nous croisons ces quantiles avec la variable \verb|severity|. 
+
+\begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.4]{PB1/Plot/age1.png} 
+       	\includegraphics[scale=0.5]{PB1/Plot/age2.png} 
+       	\caption{À gauche, le découpage en 11 classes avec les quantiles permet d'avoir des effectifs homogènes pour chaque modalité. À droite, le croisement avec la sévérité de la tumeur montre un lien net.} 
+\end{figure}
+
+
+On retrouve bien ce que notre intuition nous soufflait puisque la proportion de tumeurs malignes augmentent nettement avec l'âge. Plus précisément, on peut identifier 4 ensembles :
+\begin{itemize}
+\item un premier ensemble d'individus ayant moins de 35 ans et pour lesquels le risque de tumeur maligne est très faible (environ 7.5 \% des cas)
+\item un ensemble formé d'individus agés entre 36 et 51 ans où la proportion de tumeur maligne est autour de 30\%)
+\item on observe ensuite un groupe d'individus agés de 52 à 65 ans où le risque est important (50\% des tumeurs sont malignes)
+\item enfin les individus de plus de 66 ans présentent une tumeur maligne dans environ 80\% des cas.
+\end{itemize} 
+
+La variable \verb|age| nous apparaît donc importante. Nous choisissons de la prendre en compte dans l'analyse à suivre en la rendant qualitative suivant le découpage qui vient d'être identifié. Elle pourra donc prendre les 4 modalités suivantes : \verb|<=35|, \verb|36-51|, \verb|52-65| et \verb|>=66|.
+
+
+\subsubsection{Pouvoir discriminant des variables}
+Avant d'étudier les autres variables, il est intéressant d'étudier le pouvoir discriminant de l'ensemble des variables, mesuré par la valeur absolue du V de Cramer de la variable explicative avec la variable à expliquer. 
+
+\begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.2]{PB1/Plot/cramer.png} 
+\end{figure}
+
+On observe que \verb|density| a une valeur beaucoup plus faible que les autres variables. On peut déjà voir ici que cette variable ne donnera pas beaucoup d'information sur la sévérité de la tumeur. À l'opposé, \verb|assessment| a une valeur forte du V de Cramer, ce qui montre que le jugement apporté par les spécialistes sur la sévérité de la tumeur est efficace. Les trois autres variables viennent ensuite, avec une valeur qui reste haute, montrant par là leur pouvoir prédictif de la sévérité de la tumeur. 
+
+Regardons à présent de plus près chaque variable.
+
 
 \subsubsection{Assessment}
 Cette variable est ordianle, constituée d'un jugement de spécialistes ayant attribué un degré de la sévérité de la tumeur : de 1 (tumeur bénigne) jusqu'à 5 (tumeur très probablement maligne). On s'attend donc à ce qu'une valeur élevée (4 ou 5) soit attribuée à une tumeur qui se révèlerait être maligne, et une valeur faible à une tumeur bénigne.
 
-Avant toute chose, on observe quelques données abérantes prenant les valeurs 0 ou 6. On supprime ces lignes. On a aussi une ligne avec la valeur 55, on peut supposer que c'est une erreur de frappe, on la remplace par la valeur 5.
-
-Ceci étant fait on regarde comment sont réparties les modalités.
-
 \begin{figure}[!ht]
-
-\begin{minipage}{.4\textwidth}\centering
-\begin{tabular}{c|cccc}
-Assessment & 2 &  3 &  4 &  5 \\ 
- Effectifs & 7 & 24 & 468 & 317 \\
-\end{tabular}
-\end{minipage}
-\hfill
-\begin{minipage}{.55\textwidth}\centering
-\includegraphics[scale=0.4]{PB1/Plot/Rplot1.eps}
-\end{minipage}
-\caption{Répartition des individus dans les différents niveaux de la variable assessment }
+	\centering
+     	\includegraphics[scale=0.2]{PB1/Plot/assess.png} 
 \end{figure}
 
-
-
-\begin{minipage}{.4\textwidth}\centering
-\begin{tabular}{c|cc}
-   & benign & malignant \\
-   \hline
-  2  & 7  &       0  \\
-  3    &   20        & 4  \\
-  4     & 365  &     103 \\
-  5    &   31    &   286\\
-\end{tabular}
-\end{minipage}
-\hfill
-\begin{minipage}{.4\textwidth}\centering
-\begin{tabular}{c|cc}
-       & benign &malignant\\
-       \hline
-  2 &1.0000000 &0.0000000\\
-  3& 0.8333333 &0.1666667\\
-  4& 0.7799145 &0.2200855\\
-  5 &0.0977918& 0.9022082\\
-\end{tabular}
-%\captionof{table}{La table}
-\label{tab}
-\end{minipage}
 
 On observe que les individus sont très majoritairement classés dans les modalités 4 et 5 (dans plus de 96\% des cas). Cependant, la sévérité de la tumeur est alors en quelque sorte surestimée, puisqu'il arrive souvent (presque 78\% des cas) qu'une tumeur classée 4 se révèle bénigne. Ceci paraît valider l'hypothèse faite dans le commentaire des données brutes, à savoir qu'une tumeur réellement maligne et pour laquelle une biopsie (opération consistant à enlever une partie de l'organe) est nécessaire est difficile à prédire. Les spécialistes ont alors tendance à être prudents et à réaliser plus de biopsies qu'il serait en fait nécessaire.   
 
 Cette première analyse nous confirme ainsi dans l'idée qu'une étude statistique des résultats de la mammographie pourrait aider à mieux identifier les profils de tumeurs à risque.
 
 
-\subsubsection{Age}
-L'âge est \emph{a priori} une variable importante dans le problème puisqu'on a tendance à penser que le risque d'une tumeur maligne augmente avec l'âge.
-
-Dans notre jeu de données, cette variable a une allure normale, avec une moyenne à environ 56 ans. Pour mieux voir l'influence de l'âge, on le découpe en 12 quantiles. (Le nombre 12 est complètement arbitraire, c'est simplement celui qui nous a paru, après plusieurs essais avec d'autres valeurs, le plus intéressant). Puis nous croisons ces quantiles avec la variable \verb|severity|. On retrouve bien ce que notre intuition nous soufflait puisque la proportion de tumeurs malignes augmentent nettement avec l'âge. Plus précisément, on peut identifier 4 ensembles :
-\begin{itemize}
-\item un premier ensemble d'individus ayant moins de 35 ans et pour lesquels le risque de tumeur maligne est très faible (environ 7.5 \% des cas)
-\item un ensemble formé d'individus agés entre 36 et 51 ans où la proportion de tumeur maligne est autour de 30\%)
-\item on observe ensuite un groupe d'individus agés de 52 à 66 ans où le risque est important (50\% des tumeurs sont malignes)
-\item enfin les individus de plus de 67 ans présentent une tumeur maligne dans environ 80\% des cas.
-\end{itemize} 
-
-La variable \verb|age| nous apparaît donc importante. Nous choisissons de la prendre en compte dans l'analyse à suivre en la rendant qualitative suivant le découpage qui vient d'être identifié. Elle pourra donc prendre les 4 modalités suivantes : \verb|<35|, \verb|36-51|, \verb|52-66| et \verb|>67|.
-
 \subsubsection{Shape}
-Vient ensuite la variable \verb|shape| qui est qualitative et prend les modalités \verb|round|, \verb|oval|, \verb|lobular| et \verb|irregular|. À la vue du tableau obtenu en croisant cette variable avec \verb|severity|, on peut penser que \verb|shape| est un facteur important de la sévérité de la tumeur et que les 4 modalités sont classées par ordre de risque. On observe le phénomène suivant :
+Vient ensuite la variable \verb|shape| qui est qualitative et prend les modalités \verb|round|, \verb|oval|, \verb|lobular| et \verb|irregular|. 
+
+\begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.2]{PB1/Plot/shape.png} 
+\end{figure}
+
+À la vue du tableau obtenu en croisant cette variable avec \verb|severity|, on est conforté dans l'idée que \verb|shape| est un facteur important de la sévérité de la tumeur et que les 4 modalités sont classées par ordre de risque. On observe le phénomène suivant :
 \begin{itemize}
 \item les modalités \verb|round| et \verb|oval| sont à risque faible (environ 17\% de tumeurs malignes)
 \item \verb|lobular| présente un risque moyen (50\% de tumeurs malignes)
@@ -156,7 +149,14 @@ Vient ensuite la variable \verb|shape| qui est qualitative et prend les modalit�
 
 
 \subsubsection{Margin}
-La variable \verb|margin| prend les 5 modalités \verb|circumscribed|, \verb|microlobulated|, \verb|obscured|, \verb|ill-defined| et \verb|spiculated|. Comme précedemment, on croise cette variable avec \verb|severity| pour observer que :
+La variable \verb|margin| prend les 5 modalités \verb|circumscribed|, \verb|microlobulated|, \verb|obscured|, \verb|ill-defined| et \verb|spiculated|. 
+
+\begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.2]{PB1/Plot/margin.png} 
+\end{figure}
+
+Comme précedemment, on croise cette variable avec \verb|severity| pour observer qu'elles sont liées significativement. En particulier : 
 \begin{itemize}
 \item la modalité \verb|circumscribed| présente une proportion faible de tumeurs malignes (12\%)
 \item un saut très prononcé apparait pour les 4 autres modalités (de 60 à 83\% de cas de tumeurs malignes)
@@ -165,7 +165,14 @@ La variable \verb|margin| prend les 5 modalités \verb|circumscribed|, \verb|mic
  
 
 \subsubsection{Density}
-On trouve enfin la variable \verb|density| qui prend 4 modalités : \verb|high|, \verb|iso|, \verb|low| et \verb|fat-containing|. Cette variable ne semble pas très informative concernant la sévérité de la tumeur. En effet, la grande majorité des individus (près de 91\%) sont classés dans la modalité \verb|low|. De plus, le croisement avec \verb|severity| montre que pour chaque modalité environ 50\% des tumeurs se révèlent etre malignes. Cette variable n'ajoute pas ou peu d'information sur la sévérité. Elle pourrait meme nous gener dans la réalisation d'une analyse des correspondances du fait du manque d'effectifs certaines des modalités. On préfère donc se passer de cette variable pour l'analyse en concluant déjà qu'elle ne permet de montrer un lien avec la sévérité de la tumeur.
+On trouve enfin la variable \verb|density| qui prend 4 modalités : \verb|high|, \verb|iso|, \verb|low| et \verb|fat-containing|. 
+
+\begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.2]{PB1/Plot/density.png} 
+\end{figure}
+
+Comme repéré par la valeur du V de Cramer, cette variable ne semble pas très informative concernant la sévérité de la tumeur. En effet, la grande majorité des individus (près de 91\%) sont classés dans la modalité \verb|low|. De plus, le croisement avec \verb|severity| montre que pour chaque modalité environ 50\% des tumeurs se révèlent etre malignes. Cette variable n'ajoute pas ou peu d'information sur la sévérité. Elle pourrait meme nous gener dans la réalisation d'une analyse des correspondances du fait du manque d'effectifs de certaines des modalités. On préfère donc se passer de cette variable pour l'analyse en concluant déjà qu'elle ne permet d'établir un lien clair avec la sévérité de la tumeur.
 
   \subsection{Analyse des correspondances multiples (ACM)}
   Étant donné le caractère des données, l'objectif et la première analyse ci-dessus, on réalise une ACM sur les variables \verb|age|, \verb|shape| et \verb|margin|. 
@@ -179,7 +186,7 @@ On trouve enfin la variable \verb|density| qui prend 4 modalités : \verb|high|,
    
 La figure 2.2 permet de tirer un certain nombre d'observations. La première est que l'on peut qualifier l'axe 1 d'axe de sévérité, les modalités supplémentaires \verb|benign| et \verb|malignant| étant bien représentées sur cet axe, symétriquement à 0. On note ensuite que l'âge est bien représenté par l'axe 1 : plus l'individu est âgé plus la tumeur est susceptible d'être maligne. La représentation de la variable \verb|shape| recoupe notre analyse précédente : les modalités \verb|round| et \verb|oval| préfigure en général une tumeur bénigne ; la modalité \verb|lobular| présente un risque moyen-élevé et la forme \verb|irregular| est par contre signe d'une tumeur maligne. On retrouve aussi ce que l'on avait dit concernant la variable \verb|margin| : une modalité sans risque important (\verb|circumscibed|) et 4 modalités risquées, dans cet ordre, \verb|microlobulated|, \verb|obscured|, \verb|ill-defined| et \verb|spiculated|.
 
-D'autre part, on retrouve également la surestimation du risque par la variable \verb|assessment| : les niveaux 2,3 et 4 sont proches du caractère bénin de la tumeur.
+D'autre part, on retrouve également la surestimation du risque par la variable \verb|assessment| : le niveau 4 est proche du caractère bénin de la tumeur.
 
 On peut ensuite repérer un profil type de tumeur bénigne : ce sera un individu âgé de moins de 51 ans, présentant les modalités \verb|round| ou \verb|oval| pour la forme de la tumeur et la modalité \verb|circumscribed| pour la frange.
 De même un profil à risque très élevé de tumeur maligne est un individu de plus de 66 ans, avec une tumeur de forme irrégulière et une modalité \verb|ill-defined| pour la frange.
@@ -196,7 +203,7 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
   \subsection{Analyse factorielle des correspondances (AFC)}
    
    \subsubsection{Shape et margin}
-   L'AFC sur les variables \verb|shape| et \verb|margin| permet de visualiser le lien fort qui uni effectivement ces 2 variables (le test du Chi 2 d'indépendance est rejeté très largement). 
+   L'AFC sur les variables \verb|shape| et \verb|margin| permet de visualiser le lien fort qui uni effectivement ces 2 variables : le test du Chi 2 d'indépendance est rejeté très largement, la valeur du V de Cramer est 0.4592. 
 
       \begin{figure}[!ht]
 	\centering
@@ -214,7 +221,7 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
    
    
       \subsubsection{Shape et age}
-   L'AFC sur les variables \verb|shape| et \verb|age| permet de visualiser le lien fort qui uni effectivement ces 2 variables (le test du Chi 2 d'indépendance est rejeté très largement, même si la valeur du Chi 2 n'est pas aussi élevée que dans le cas précédent). 
+   On réalise aussi une AFC sur les variables \verb|shape| et \verb|age|. Ce qui nous permet de visualiser la liaison entre ces 2 variables : le test du Chi 2 d'indépendance est rejeté très largement, même si la valeur du Chi 2 n'est pas aussi élevée que dans le cas précédent ; le V de Cramer est de 0.2178. 
 
       \begin{figure}[!ht]
 	\centering
@@ -227,12 +234,12 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
    \begin{itemize}
       \item \verb|35-51|, \verb|oval| et \verb|round|
    \item \verb|51-66| et \verb|lobular|
-      \item \verb|>66| et \verb|irregular|
+      \item \verb|>=66| et \verb|irregular|
    \end{itemize}
-   La modalité \verb|<35| est seule nettement à droite sur le premier axe.
+   La modalité \verb|<=35| est seule nettement à droite sur le premier axe. 
 
      \subsubsection{Margin et age}
-   L'AFC sur les variables \verb|margin| et \verb|age| permet de visualiser le lien fort qui uni effectivement ces 2 variables (le test du Chi 2 d'indépendance est rejeté très largement, la valeur du Chi 2 est du même ordre que pour le cas de \verb|shape| et \verb|age|). 
+   Enfin, l'AFC sur les variables \verb|margin| et \verb|age| permet de visualiser le lien qui uni effectivement ces 2 variables : le test du Chi 2 d'indépendance est rejeté très largement, la valeur du Chi 2 est du même ordre que pour le cas de \verb|shape| et \verb|age| ; la valeur du V de Cramer est de 0.2559. 
 
       \begin{figure}[!ht]
 	\centering
@@ -248,17 +255,25 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
    \end{itemize}
    
    
-  \subsection{Pour aller plus loin}
-  Par une ACM puis différentes ACP nous sommes parvenus à identifier les liens existants entre les modalités des 3 variables \verb|shape|, \verb|age| et \verb|margin| et à conforter l'idée que ces variables permettaient effectivement d'identifier une tumeur maligne. L'étape suivante serait donc d'essayer, à partir d'un profil donné, d'établir un risque que la tumeur soit maligne. Cela pourrait permettre de compléter le jugement des spécialistes. Pour réaliser un tel travail de prévision, on pense à la technique du scoring réalisée avec une analyse discriminante linéaire ou une régression logistique\footnote{Pour la mise en pratique de cette méthode, on pourra consulter le chapitre 17 de l'ouvrage de Stéphane TUFFÉRY}.    
+  \subsection{Conclusion}
+  Par une ACM puis différentes ACP nous sommes parvenus à identifier les liens existants entre les modalités des 3 variables \verb|shape|, \verb|age| et \verb|margin| et à conforter l'idée que ces variables permettaient effectivement d'identifier une tumeur maligne. On a déjà noté que les spécialistes avaient tendance à surestimer la sévérité de la tumeur. Par exemple, parmi les individus classés 4 par la variable \verb|assessment|, 66 étaient agés de moins de 35 ans. Sur ces 66 tumeurs, 64 se sont révélées être bénignes. Beaucoup possédaient en effet des modalités \verb|shape| et \verb|margin| que nous avons identifié comme étant peu risquées.   
+  
+   L'étape suivante serait donc, à partir d'un profil donné, d'essayer d'établir un risque que la tumeur soit maligne. Cela pourrait permettre de compléter le jugement des spécialistes. Pour réaliser un tel travail de prévision, on pense à la technique du scoring réalisée avec une analyse discriminante linéaire ou une régression logistique\footnote{Pour la mise en pratique de cette méthode, on pourra consulter le chapitre 17 de l'ouvrage de Stéphane TUFFÉRY}.    
   
   
 
  
  \begin{appendix}
  \chapter{Problème 1}
- \label{Pb1}
-\lstset{frame=single, xrightmargin =1cm , xleftmargin =1 cm, morekeywords={uniroot,rweibull,seq,abline,par,rbind,repeat,hist,sd,next}}
-\lstinputlisting[firstline=4, lastline=6]{./PB1/pb1_OK.R}
+  \label{Pb1}
+ On présente ici le code utilisé pour l'étude du premier problème. Nous avons utilisé conjointement \verb|R| et \verb|SAS|. Si il y a certaines répétitions, cela permet de voir les différences de syntaxe et de sorties.
+ 
+ Pour \verb|R| : 
+\lstset{frame=single, xrightmargin =1cm , xleftmargin =1 cm}
+\lstinputlisting[firstline=2, lastline=193]{./PB1/pb1_OK.R}
+
+Pour \verb|SAS| : 
+\lstinputlisting[]{./PB1/pb1.sas}
 \end{appendix}
 
 
