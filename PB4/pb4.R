@@ -27,14 +27,34 @@ attach(X)
 summary(X)
 
 library(FactoMineR)
-res.acp = PCA(X,scale.unit=T,graph=T)
+res.acp = PCA(X,graph=T)
+#trie des variables les plus caractérisantes
+dimdesc(res.acp)
 #1er axe surtout lié aux variables 15 (0.94),6 (0.84) et 17 (0.83) positivement
 #2ème axe principalement décrit par rapport aux variables 16 (0.75),14 (0.63),3 (0.62) positivement et négativement par 11 (-0.61)
 
+#donc deja pour la question : "y a-t-il des groupes qui se ressemblent?"
+# on peut dire : grossièrement d'abord 3 groupes :
+# - 1 pour lequel 1er axe élevé, cad élevé pour 15,6,17
+# - 1 groupe pour faible sur 1er axe, élevé sur 2ème : cad faible 15,6,17 et élevé pour 16,14,3, faible pour 11
+# - 1 pour faible sur 1er axe, faible sur 2ème
+
+
 barplot(res.acp$eig[,2],names=paste("Dim",1:nrow(res.acp$eig)))
 round(res.acp$eig[1:18,],2)
+#On peut prendre en compte 5 axes : ils expliques près de 79% de la variance
 
+plot(res.acp,choix="var",axes=c(1,2))
+plot(res.acp,choix="var",axes=c(2,3))
+plot(res.acp,choix="var",axes=c(1,3))
+plot(res.acp,choix="var",axes=c(1,4))
+plot(res.acp,choix="var",axes=c(2,4))
+plot(res.acp,choix="var",axes=c(3,4))
+
+#trie des variables les plus caractérisantes
 dimdesc(res.acp)
+
+
 
 plot(res.acp,choix="ind",cex=0.7)
 
@@ -64,9 +84,8 @@ Cor
 #18 avec rien
 
 
-summary(lm(var15~var6))
 
-#essai classification 
+#essai classification ascendante hierarchique 
 library(cluster)
 res = PCA(X,graph=F,ncp=11)
 class = agnes(res$ind$coord, method="ward")
@@ -75,11 +94,17 @@ plot(class)
 class2 = as.hclust(class)
 plot(rev(class2$height),type="h",ylab="hauteurs")
 
-classes = cutree(class,k=5)
+classes = cutree(class,k=11)
 classes
 
 XPlus = cbind.data.frame(X,as.factor(classes))
 colnames(XPlus)[19] = "Classe"
 
 resACP = PCA(XPlus,quali.sup=19,graph=F)
+plot(resACP,choix="ind",habillage = 19,axes=c(1,2))
 plot(resACP,choix="ind",habillage = 19,axes=c(1,3))
+plot(resACP,choix="ind",habillage = 19,axes=c(1,4))
+plot(resACP,choix="ind",habillage = 19,axes=c(2,3))
+plot(resACP,choix="ind",habillage = 19,axes=c(2,4))
+plot(resACP,choix="ind",habillage = 19,axes=c(3,4))
+
