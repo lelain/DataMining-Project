@@ -35,9 +35,43 @@
  
 \chapter{Rappel sur les méthodes utilisées}
 
-\section{Analyse Factorielle des correspondances}
+\section{L'analyse factorielle}
+Les techniques factorielles permettent à la fois de représenter en deux ou trois dimensions, le plus fidèlement possible, les individus d'une population, mais aussi de détecter les liaisons entre les variables ainsi que les variables séparant le mieux les individus. Elles font appel à l'algèbre linéaire. C'est un outil très visuel : un simple coup d'oeil permet de localiser les grandes masses d'individus, de détecter les individus exceptionnels et de repérer d'éventuels groupes isolés d'individus. Les techniques factorielles sont aussi un puissant outil de réduction des dimensions d'un problème, qui permet de diminuer le nombre de variables étudiées en perdant le moins possible d'information.
 
-\subsection{Objectifs}
+\subsection{Analyse en Composantes Principales}
+
+\subsubsection{Objectifs}
+L'objectif d'une Analyse en Composantes Principales (ACP) est de résumer un tableau de données individus $\times$ variables, lorsque les données sont toutes numériques. L'ACP permet d'étudier les ressemblances entre individus du point de vue de l'ensemble des variables et dégage des profils d'individus. Elle permet également de réaliser un bilan des liaisons linéaires entre variables à partir des coefficients de corrélations. Ces études étant réalisées dans un même cadre, elles peuvent être reliées, ce qui permet de caractériser les individus ou groupes d'individus par les variables et d'illustrer les liaisons entre variables à partir d'individus caractéristiques.
+
+Ainsi, l'ACP permet, à partir de $p$ variables numériques analysées, de construire $m$ ($\leq p$) autres variables, appelées composantes principales ou facteurs, qui sont des combinaisons linéaires des variables analysées, et qui présentent d'intéressantes caractéristiques : 
+\begin{itemize}
+\item les composantes principales sont ordonnées selon l'information qu'elles restituent, la première étant celle qui restitue le plus d'information ;
+\item on sait quelle part d'information restitue chaque composante principale, et des critères permettent de décider combien de composantes principales il est judicieux de conserver ;
+\item les composantes principales sont des vecteurs indépendants, c'est-à-dire des variables non corrélées linéairement entre elles (l'ACP n'est donc pas affectée par la présence de données corrélées).
+\end{itemize}
+
+\subsubsection{Atouts de l'ACP}
+La représentation des variables dans un plan factoriel est le moyen le plus intuitif et le plus pratique de repérer les variables liées entre elles ou au contraire opposées.
+Un autre intérêt de l'ACP est de permettre, par sa représentation graphique, de contrôler le résultat d'une classification obtenue, soit indépendamment, soit à partir des composantes principales. Cette représentation permet de :
+\begin{itemize}
+\item vérifier visuellement la pertinence de la classification ;
+\item éventuellement aider à choisir le nombre de classes le plus approprié ;
+\item isoler facilement certains individus dont les données paraissent aberrantes et proviennent peut-être d'une erreur de mesure ou de saisie ;
+\item sélectionner les individus les plus typiques d'une classe, ou au contraire ceux qui sont proches d'une classe voisine et vers laquelle ils peuvent évoluer.
+\end{itemize}
+
+\subsubsection{Écueils à éviter}
+\begin{itemize}
+\item Il ne faut pas superposer l'espace des individus et celui des variables ;
+\item dans un plan factoriel, la proximité de deux variables n'a de sens que si elles sont proches du cercle des corrélations ;
+\item le premier plan factoriel n'est pas le seul à dévoiler des informations intéressantes, on peut aussi avec profit croiser le premier et troisième, etc. ;
+\item il faut éviter qu'un individu (ou un petit groupe d'individus) ait une trop forte contribution aux premiers axes, le pire étant qu'un axe soit complètement expliqué par un seul individu.
+\end{itemize}
+
+
+\subsection{Analyse Factorielle des correspondances}
+
+\subsubsection{Objectifs}
 L'analyse factorielles des correspondances (AFC) permet de résumer et de visualiser un tableau de contingence, c'est-à-dire un tableau croisant deux variables qualitatives. Les objectifs de l'AFC sont les suivants :
  \begin{itemize}
  \item comparer les profils lignes entre eux
@@ -45,12 +79,12 @@ L'analyse factorielles des correspondances (AFC) permet de résumer et de visual
  \item interpréter les proximité entre les lignes et les colonnes, c'est-à-dire visualiser les associations des modalités des deux variables
  \end{itemize}
 
-\section{Analyse des Correspondances Multiples}
+\subsection{Analyse des Correspondances Multiples}
 
-\subsection{Objectifs}
+\subsubsection{Objectifs}
 L'analyse des correspondances multiples (ACM) est l'extension de l'AFC au cas de plus de deux variables. L'ACM permet d'étudier les ressemblances entre individus du point de vue de l'ensemble des variables et de dégager des profils d'individus. Elle permet également de faire un bilan des liaisons entre variables et d'étudier les associations de modalités.
 
-\subsection{Atouts de l'AFC et de l'ACM}
+\subsubsection{Atouts de l'AFC et de l'ACM}
 \begin{itemize}
  \item les facteurs sont les variables numériques qui séparent le mieux les modalités des variables qualitatives étudiées ;
  \item elles permettent de vérifier visuellement que des modalités voisines par définition sont proches dans le plan factoriel ;
@@ -59,7 +93,7 @@ L'analyse des correspondances multiples (ACM) est l'extension de l'AFC au cas de
  \item elles permettent de représenter simultanément individus et modalités sur un même plan ;
  \end{itemize}
  
- \subsection{Aspects à vérifier}
+ \subsubsection{Aspects à vérifier}
  En AFC et ACM, il est très important de vérifier qu'il n'y a pas de modolités rares (avec un faible effectif), car ces méthodes apportent beaucoup d'importance à ces modalités. 
  
  
@@ -73,7 +107,7 @@ L'objectif de l'étude est de voir si les 3 variables \verb|shape| , \verb|densi
 
 Le code \verb|R| et \verb|SAS| que nous avons utilisé est fournit en annexe A.
 
-\subsection{Préparation des données}
+\subsection{Premier aperçu des données}
 Le fichier des données brutes ne présente pas le nom des variables, utilise la virgule comme caractère de séparation et le point d'interrogation pour coder les valeurs manquantes. 
 
 Les données comprennent 131 lignes ayant au moins une valeur manquante. On décide de supprimer toutes ces lignes.
@@ -261,8 +295,40 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
    L'étape suivante serait donc, à partir d'un profil donné, d'essayer d'établir un risque que la tumeur soit maligne. Cela pourrait permettre de compléter le jugement des spécialistes. Pour réaliser un tel travail de prévision, on pense à la technique du scoring réalisée avec une analyse discriminante linéaire ou une régression logistique\footnote{Pour la mise en pratique de cette méthode, on pourra consulter le chapitre 17 de l'ouvrage de Stéphane TUFFÉRY}.    
   
   
-
+   \chapter{Problème 4}
  
+\section{Description des données et objectif de l'étude}
+Le jeu de données \emph{viruses} présentent 61 virus présentant des paarticules en forme de tige et susceptibles d'infecter diverses plantations (tabac, tomates, comcombres par exemple). À chaque virus correspond 18 mesures qui sont le nombre d'acides aminés par molécules de protéine d'enveloppe\footnote{Pour des détails sur les données, on pourra consulter l'article de Fauquet disponible à cette adresse : $http://horizon.documentation.ird.fr/exl-doc/pleins_textes/pleins_textes_7/b_fdi_55-56/010022153.pdf$}. 
+
+Les données sont rangées dans l'ordre de quatre types de virus : Hordeviruses (3), Tobraviruses (6), Tobamoviruses (39) et 'furoviruses' (13). 
+
+L'objectif de l'étude est de repérer des ressemblances entre différents virus et d'essayer d'interpréter ces ressemblances en fonction des varaibles disponibles. 
+
+\subsection{Premier aperçu des données}
+Vu la nature des données, une première approche est d'ajouter une variable qui sera la somme des valeurs des autres variables. En effet, une variable représentant le nombre d'acides aminés pour 18 protéines, faire le total de ces acides aminés pourraient apporter une première idée de regroupement des virus.
+
+On présente ci-dessous l'histogramme obtenu pour cette nouvelle variable ainsi que son boxplot en fonction des 4 types de virus.
+
+ \begin{figure}[!ht]
+	\centering
+     	\subfigure[Histogramme du nombre total d'acides aminés]{ \includegraphics[scale=0.38]{PB4/RplotHist.eps} }
+	\subfigure[Boxplot par type de virus]{ \includegraphics[scale=0.38]{PB4/RplotBoxplot.eps} }
+
+\end{figure}
+
+Sur l'histogramme un groupe autour de la valeur 158 se détache clairement. Un autre groupe semble se former à l'extrême droite. Entre les valeurs 175 et 200 il est assez difficile de voir si un ou plusieurs groupes apparaissent.  
+
+Le boxplot est intéressant dans le sens on peut observer les virus exceptionnels. Pour le type \emph{furoviruses}, ce sont les virus 56 (total de 170) et le virus 55 (198). Pour le type \emph{tobamoviruses} on remarque surtout le virus 11 avec une valeur particulièrement faible (122).
+
+Cette première petite étude nous permet de retenir ces 3 virus, pour éventuellement les laisser de côté à un moment. Elle montre aussi qu'excepté ces 3 virus, la division en 4 groupes de virus semblent bien s'opérer. Il est à présent intéressant de voir ce qui différencie ces différents groupes, d'en savoir un peu plus sur les variables. Pour cela, on réalise une ACP. 
+
+\section{Analyse en composantes principales}
+
+
+
+
+
+
  \begin{appendix}
  \chapter{Problème 1}
   \label{Pb1}
