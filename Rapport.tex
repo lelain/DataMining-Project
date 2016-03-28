@@ -298,36 +298,87 @@ On voit que \verb|margin| contribue le plus à la création des axe 1 et 2, suiv
    \chapter{Problème 4}
  
 \section{Description des données et objectif de l'étude}
-Le jeu de données \emph{viruses} présentent 61 virus présentant des paarticules en forme de tige et susceptibles d'infecter diverses plantations (tabac, tomates, comcombres par exemple). À chaque virus correspond 18 mesures qui sont le nombre d'acides aminés par molécules de protéine d'enveloppe\footnote{Pour des détails sur les données, on pourra consulter l'article de Fauquet disponible à cette adresse : $http://horizon.documentation.ird.fr/exl-doc/pleins_textes/pleins_textes_7/b_fdi_55-56/010022153.pdf$}. 
+Le jeu de données \emph{viruses} contient 61 virus présentant des particules en forme de tige et susceptibles d'infecter diverses plantations (tabac, tomates, comcombres par exemple). À chaque virus correspond 18 mesures (notées \verb|var1, ... , var18|) qui sont le nombre d'acides aminés par molécules de protéine d'enveloppe\footnote{Pour des détails sur les données, on pourra consulter l'article de Fauquet disponible à cette adresse : $http://horizon.documentation.ird.fr/exl-doc/pleins_textes/pleins_textes_7/b_fdi_55-56/010022153.pdf$}. 
 
-Les données sont rangées dans l'ordre de quatre types de virus : Hordeviruses (3), Tobraviruses (6), Tobamoviruses (39) et 'furoviruses' (13). 
+Les données sont rangées dans l'ordre de quatre types de virus (variable \verb|type|) : Hordeviruses (3), Tobraviruses (6), Tobamoviruses (39) et 'furoviruses' (13). 
 
 L'objectif de l'étude est de repérer des ressemblances entre différents virus et d'essayer d'interpréter ces ressemblances en fonction des varaibles disponibles. 
 
-\subsection{Premier aperçu des données}
+\section{Première idée des données}
 Vu la nature des données, une première approche est d'ajouter une variable qui sera la somme des valeurs des autres variables. En effet, une variable représentant le nombre d'acides aminés pour 18 protéines, faire le total de ces acides aminés pourraient apporter une première idée de regroupement des virus.
 
-On présente ci-dessous l'histogramme obtenu pour cette nouvelle variable ainsi que son boxplot en fonction des 4 types de virus.
+On présente ci-dessous (figure \ref{hist}) l'histogramme obtenu pour cette nouvelle variable ainsi que son boxplot en fonction des 4 types de virus.
 
  \begin{figure}[!ht]
 	\centering
-     	\subfigure[Histogramme du nombre total d'acides aminés]{ \includegraphics[scale=0.38]{PB4/RplotHist.eps} }
-	\subfigure[Boxplot par type de virus]{ \includegraphics[scale=0.38]{PB4/RplotBoxplot.eps} }
+     	\subfigure[Histogramme du nombre total d'acides aminés]{ \includegraphics[scale=0.38]{PB4/Plot/RplotHist.eps} }
+	\subfigure[Boxplot par type de virus]{ \includegraphics[scale=0.38]{PB4/Plot/RplotBoxplot.eps} }
+	\caption{Étude descriptive du total du nombre d'acides aminés. }
+	\label{hist}
 
 \end{figure}
 
 Sur l'histogramme un groupe autour de la valeur 158 se détache clairement. Un autre groupe semble se former à l'extrême droite. Entre les valeurs 175 et 200 il est assez difficile de voir si un ou plusieurs groupes apparaissent.  
 
-Le boxplot est intéressant dans le sens on peut observer les virus exceptionnels. Pour le type \emph{furoviruses}, ce sont les virus 56 (total de 170) et le virus 55 (198). Pour le type \emph{tobamoviruses} on remarque surtout le virus 11 avec une valeur particulièrement faible (122).
+Le boxplot est intéressant dans le sens où on peut observer les virus exceptionnels. Pour le type \emph{furoviruses}, ce sont les virus 56 (total de 170) et le virus 55 (198). Pour le type \emph{tobamoviruses} on remarque surtout le virus 11 avec une valeur particulièrement faible (122).
 
 Cette première petite étude nous permet de retenir ces 3 virus, pour éventuellement les laisser de côté à un moment. Elle montre aussi qu'excepté ces 3 virus, la division en 4 groupes de virus semblent bien s'opérer. Il est à présent intéressant de voir ce qui différencie ces différents groupes, d'en savoir un peu plus sur les variables. Pour cela, on réalise une ACP. 
 
 \section{Analyse en composantes principales}
+On réalise dans un premier temps une ACP sur tous les individus. La variable \verb|total| et le type de virus sont des variables supplémentaires non prises en compte dans les calculs mais visibles sur les graphiques, ce qui aidera à l'analyse. 
 
+Cette ACP donne que $72.44\%$ de l'inertie est expliquée par les 4 premières composantes principales. Nous baserons notre analyse sur ces 4 premiers axes. 
 
+\subsection{Espace des individus}
 
+      \begin{figure}[!ht]
 
+	\centering
+     	\subfigure[Espace des individus sur les axes 1 et 2.]{\includegraphics[scale=0.5]{PB4/Plot/RplotACP1.eps}}
+	\subfigure[Espace des individus sur les axes 3 et 4.]{\includegraphics[scale=0.5]{PB4/Plot/RplotACP2.eps}}
+	\caption{Résultats de l'ACP : espaces des individus}
+	 \label{ACP1}
+\end{figure}
 
+Notons déjà que la figure \ref{ACP1} confirme les caractères particuliers des virus 55 et 56. Le virus 11 cependant, même s'il est celui ayant la valeur la plus faible pour l'axe 1, ne semble pas se différencier aussi nettement que ce qu'aurait pu laisser penser l'étude réalisée plus haut.
+
+On peut ensuite noter que le type \emph{Tobraviruses} (en bleu) est assez bien isolé, particulièrement par l'axe 2. 
+
+De même le groupe des \emph{Furoviruses}, si l'on met de côté les virus 55 et 56, se démarque nettement sur la droite de l'axe 1. Cependant, les virus 49, 50, 51, 52, 53 et 54 se regroupent à l'extrême droite. Et on peut remarquer que se regroupement se poursuit dans les autres plans factoriels. On peut ainsi se demander s'il n'y a pas là existence d'un sous-groupe. Les virus de 55 à 61 sont assez dispersés sur les différents plans factoriels : on peut s'interroger sur le classement de ces virus dans la classe \emph{Furoviruses}.
+ 
+Les 3 virus de type \emph{Hordeviruses} sont bien regroupés dans les différents plans factoriels. Même s'ils sont confondus avec certains virus \emph{Furoviruses} sur l'axe 1, les représentations dans les dimensions supérieures les différencient assez clairement. 
+
+Quant à la classe des \emph{Tobamoviruses}, les plus nombreux (39 sur 61), l'axe 2 différencie nettement 2 groupes : les virus 17, 20, 21, 35, 36 37 d'un côté (valeur élevée sur l'axe 2) et les autres (valeur moyenne à basse sur l'axe 2). Les résultats de l'ACP laissent penser qu'il est possible d'identifier des sous-groupes dans le type \emph{Tobamoviruses}. Pour cela, une nouvelle ACP réalisée simplement sur ces 39 virus pourrait être intéressante.  Des méthodes de classification (classification ascendante hiérarchique, méthode des -means par exemple) pourraient aussi apporter des informations pour d'éventuels regroupements.  
+
+\subsection{Espace des variables}
+
+      \begin{figure}[!ht]
+
+	\centering
+     	\subfigure[Espace des variables sur les axes 1 et 2.]{\includegraphics[scale=0.5]{PB4/Plot/RplotACP3.eps}}
+	\subfigure[Espace des variables sur les axes 3 et 4.]{\includegraphics[scale=0.5]{PB4/Plot/RplotACP4.eps}}
+	\caption{Résultats de l'ACP : espaces des variables}
+	 \label{ACP2}
+\end{figure}
+
+Les axes 1 et 2 sont les plus intéressants. L'axe 1 est décrit principalement par les variables, dans l'ordre, 15, 6, 17 , 1 et 12 ; l'axe 2 principalement par les variables 16, 14, 3 et 11 négativement. On peut donc faire des interprétations comme : 
+\begin{itemize}
+\item Les \emph{Furoviruses} et \emph{Hordeviruses} ont des valeurs élevés pour les variables 15, 6, 17 , 1 et 12. On voit aussi que la variable supplémentaire \verb|total| est fortement liée à l'axe 1, ce qui concorde ce qu'on avait dit plus haut : les \emph{Furoviruses} et \emph{Hordeviruses} sont en effet les virus ayant le nombre total d'acides aminés le plus élevé. 
+\item Les \emph{Tobraviruses} ont des valeurs élevées pour les variables 16, 14 et 3, faibles pour la variable 11.
+\end{itemize}
+
+Les représentations de la figure \ref{ACP2} permettent aussi de faire des regroupement de variables : on peut rapprocher les variables  15, 6, 1 et 12, avec peut-être aussi la 17. On peut également regrouper les variables 16, 5, 7 et 2 (opposée aux 3 autres). On peut éventuellement voir aussi que sur les 2 graphiques, la variable 18 s'oppose à la 3.
+Pour aller plus loin dans ce regroupement de variables, la procédure VARCLUS de SAS fournit une solution de classification de variables\footnote{Pour des détails sur cette procédure, voir seciton 9.14 de l'ouvrage de S.TUFFÉRY}. Notons simplement qu'elle confirme assez les regroupements précédents. 
+
+ \begin{figure}[!ht]
+	\centering
+     	\includegraphics[scale=0.4]{PB4/Plot/varclus.png}
+
+	\caption{Dendrogramme de la classification des variables}
+\end{figure}
+
+\subsection{Conclusion}
+À la suite de cette ACP plusieurs directions pour continuer l'étude se font jour : la possibilité d'identifier des sous-groupes dans le type  \emph{Tobamoviruses} ou bien un regroupement des variables. Dans tous les cas, il semble nécessaire d'avoir une meilleure connaissance des données et du domaine d'étude pour pouvoir mieux identifier les objectifs de futures analyses et correctement interpréter les résultats.  
 
  \begin{appendix}
  \chapter{Problème 1}
@@ -340,6 +391,16 @@ Cette première petite étude nous permet de retenir ces 3 virus, pour éventuel
 
 Pour \verb|SAS| : 
 \lstinputlisting[]{./PB1/pb1.sas}
+
+ \chapter{Problème 4}
+ Les codes du quatrième problème ont été majoritairement réalisés avec \verb|R|, excepté pour la classification de variables effectuée avec \verb|SAS|
+ 
+ Pour \verb|R| : 
+  \lstinputlisting[firstline=4, lastline=49]{./PB4/pb4_2603.R}
+
+Pour \verb|SAS| : 
+\lstinputlisting[]{./PB4/pb4.sas}
+
 \end{appendix}
 
 
